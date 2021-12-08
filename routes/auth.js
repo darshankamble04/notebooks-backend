@@ -88,6 +88,49 @@ router.post('/createuser',
         }
     })
 
+
+// CONTACT US 
+router.post('/contactus', async (req, res) => {
+
+        try {
+            // Cheack weather the user with this email exists already
+            let user = await User.findOne({ email: req.body.email })
+            if (!user) {
+                return res.status(400).json({ error: "Invalid Email Id!" })
+            };
+console.log("right here")
+            const mailOptions = {
+              from: 'notesyardofficial@gmail.com',
+              to: 'darshankamble7371@gmail.com',
+              subject: `${req.body.title}`,
+              text: '',
+              html: `<p>Hii i'am ${req.body.name} my email id is ${req.body.email}
+                    <br>
+                    <br>
+                    ${req.body.description}
+                    <br>
+                    <br>
+                    From ,<br>
+                    Contact us
+                    </p>`,
+            };
+            
+            transporter.sendMail(mailOptions, function(error, info){
+              if (error) {
+                console.log(error);
+                res.send({ error: 'Some error occured' })
+              } else {
+                console.log('Email sent: ' + info.response);
+                res.send({ success: true, msg: 'Your Response has been send successfully!' })
+              }
+            });
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).send("Internal server error!")
+        }
+    })
+
 // 01 [A] verify email && make authentication true  
 router.get('/verifyuser/:id/:token', async (req, res) => {
     const { id, token } = req.params
@@ -136,7 +179,7 @@ router.post('/createuserbyemail', async (req, res) => {
 
           
           const mailOptions = {
-              from: 'NO REPLY📧 <kambledarshan7371@gmail.com>',
+              from: 'NO REPLY📧 <notesyardofficial@gmail.com>',
             to: user.email,
             subject: 'Notes Yard : Account Created',
             text: '',
@@ -319,7 +362,7 @@ router.post('/forgotpassword', async (req, res) => {
         console.log(link)
         // FUNC TO SEND EMAIL :
         const mailOptions = {
-            from: 'NO REPLY📧 <kambledarshan7371@gmail.com>',
+            from: 'NO REPLY📧 <notesyardofficial@gmail.com>',
             to: user.email,
             subject: 'Notes Yard : Forgot Password Request',
             text: '',
