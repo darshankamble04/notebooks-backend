@@ -88,6 +88,22 @@ router.post('/createuser',
         }
     })
 
+// 01 [A] verify email && make authentication true  
+router.get('/verifyuser/:id/:token', async (req, res) => {
+    const { id, token } = req.params
+    try {
+        let user = await User.findOne({ _id: req.params.id })
+        const secret = UNIQUE_KEY + user.password;
+        const data = jwt.verify(token, secret);
+        user.auth = true
+        await User.findByIdAndUpdate(req.params.id, { $set: user }, { new: true })
+
+        res.render('conformation')
+
+    } catch (error) {
+        res.render('onerror')
+    }
+})
 
 // CONTACT US 
 router.post('/contactus', async (req, res) => {
@@ -131,22 +147,6 @@ console.log("right here")
         }
     })
 
-// 01 [A] verify email && make authentication true  
-router.get('/verifyuser/:id/:token', async (req, res) => {
-    const { id, token } = req.params
-    try {
-        let user = await User.findOne({ _id: req.params.id })
-        const secret = UNIQUE_KEY + user.password;
-        const data = jwt.verify(token, secret);
-        user.auth = true
-        await User.findByIdAndUpdate(req.params.id, { $set: user }, { new: true })
-
-        res.render('conformation')
-
-    } catch (error) {
-        res.render('onerror')
-    }
-})
 
 // ROUTE:01 [B] user createuser using : POST ('/api/auth/createuserbyemail')  without email verification
 router.post('/createuserbyemail', async (req, res) => {

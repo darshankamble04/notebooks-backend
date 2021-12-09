@@ -3,16 +3,18 @@ const express = require("express");
 const cors = require("cors")
 const connectToMongoDB = require('./db')
 const app = express();
+// const path = require("path")
 
 const port = process.env.PORT || 5000
 connectToMongoDB();
 
 app.use(cors())
-
+// const viewsFolderPath = path.join(__dirname, "./views")
 // MIDDLEWARE FOR JSON =>
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
-app.set('view engine', 'ejs')
+app.set("view engine", "hbs");
+// app.set("views", viewsFolderPath)
     
 // INCLUDE ROUTES =>
 app.use("/api/auth", require("./routes/auth"))

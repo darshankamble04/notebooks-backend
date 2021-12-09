@@ -2,6 +2,8 @@ const express = require("express")
 const router = express.Router();
 const Notes = require("../models/Notes");
 const isToken = require ("../middleware/fetchuser");
+const jwt = require('jsonwebtoken');
+
 
 // ROUTE :01 Get all the notebooks using : GET ("./api/notebooks/fetchallnotes/:id") login required 
 
@@ -40,6 +42,49 @@ router.post('/:id/addnote',isToken, async (req,res)=>{
     } catch (error) {
         console.error(error)
         res.status(500).send("Internal server error!")
+    }
+})
+
+const UNIQUE_KEY = 'Darshan9970';
+
+// SHARE A NOTE 
+router.post('/sharenote/:id',isToken, async (req,res)=>{
+    try {
+        let note = await Notes.findById(req.params.id);
+        // const payload = await ({
+        //     note: {
+        //         user:note.user,
+        //         id: note.id
+        //     }
+        // })
+        // const secret = UNIQUE_KEY + req.params.id;
+        // const token = await jwt.sign(payload, secret );
+        const link = `http://${req.headers.host}${req.baseUrl}/sharenote/${req.params.id}`
+        console.log(link)
+        res.json(link)
+    } catch (error) {
+        console.error(error)
+        res.status(500).send("Internal server error!")
+    }
+})
+// get of share note
+router.get('/sharenote/:id', async (req, res) => {
+    const {token } = req.params
+    try {
+        let note = await Notes.findOne({ _id: req.params.id })
+        // const secret = UNIQUE_KEY + req.params.id;
+        // const data = jwt.verify(token, secret);
+        console.log(note);
+        // await User.findByIdAndUpdate(req.params.id, { $set: user }, { new: true })
+
+        // res.render('conformation')
+        res.render("sharedNote", {
+            title:note.title ,
+            description: note.description
+        });
+
+    } catch (error) {
+        res.render('onerror')
     }
 })
 
