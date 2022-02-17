@@ -11,7 +11,7 @@ const notebookSchema = new Schema ({
         require:true
     },
     notebookCover:{
-        type:Number,
+        type:String,
     },
     bookmark: {
         type:Boolean,

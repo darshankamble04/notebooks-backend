@@ -60,7 +60,6 @@ router.post('/sharenote/:id',isToken, async (req,res)=>{
         // const secret = UNIQUE_KEY + req.params.id;
         // const token = await jwt.sign(payload, secret );
         const link = `http://${req.headers.host}${req.baseUrl}/sharenote/${req.params.id}`
-        console.log(link)
         res.json(link)
     } catch (error) {
         console.error(error)
@@ -74,7 +73,6 @@ router.get('/sharenote/:id', async (req, res) => {
         let note = await Notes.findOne({ _id: req.params.id })
         // const secret = UNIQUE_KEY + req.params.id;
         // const data = jwt.verify(token, secret);
-        console.log(note);
         // await User.findByIdAndUpdate(req.params.id, { $set: user }, { new: true })
 
         // res.render('conformation')

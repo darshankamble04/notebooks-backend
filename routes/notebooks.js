@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router();
 const Notebooks = require("../models/Notebooks");
+const Notes = require("../models/Notes");
 const isToken = require ("../middleware/fetchuser");
 
 // ROUTE :01 Get all the notebooks using : GET ("./api/notebooks/fetchallnotebooks") login required 
@@ -8,7 +9,6 @@ const isToken = require ("../middleware/fetchuser");
 router.get('/fetchallnotebooks' , isToken, async (req,res)=>{
     try {
         const notebooks = await Notebooks.find({user:req.user.id})
-        // console.log(notebooks)
         res.json(notebooks)
     } catch (error) {
         console.error(error)
@@ -20,7 +20,6 @@ router.get('/fetchallnotebooks' , isToken, async (req,res)=>{
 router.get('/bookmarkednotebooks/:id' , isToken, async (req,res)=>{
     try {
         const notebooks = await Notebooks.find({ $and: [ {user:req.user.id}, {bookmark:true} ]})
-        // console.log(notebooks)    
         res.json(notebooks)
     } catch (error) {
         console.error(error)
@@ -106,12 +105,16 @@ router.delete('/deletenotebook/:id',isToken, async (req,res)=>{
     try {
         // find the notebook to be updated and update it
         let notebook = await Notebooks.findById(req.params.id)
-
+        let note = await Notes.find({ notebook:req.params.id })
+        if (note) { 
+            note.map(async(e)=>{
+            let a = e._id.toString()
+            await Notes.findOneAndDelete(a)
+        })
+    }
         // For Security
         if (!notebook) { return res.status(404).send("Not found") }
-
         notebook =await Notebooks.findByIdAndDelete(req.params.id)
-
         res.json({ "Success": "Your notebook is successfully deleted!!", "notebook": notebook })
     } catch (error) {
         console.error(error)

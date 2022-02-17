@@ -7,13 +7,13 @@ const { body, validationResult } = require('express-validator');
 const fetchuser = require("../middleware/fetchuser");
 const { containeranalysis_v1alpha1 } = require("googleapis");
 const UNIQUE_KEY = 'Darshan9970';
-
+const PASSWORD = "Notes-Yard@$#9970?!&-";
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'notesyardofficial@gmail.com',
-      pass: 'Notes-@$#9970?!&-Yard'
+      pass: PASSWORD
     }
   });
 
@@ -45,7 +45,7 @@ router.post('/createuser',
                 password: seqpassword,
                 auth: false
             });
-            const payload = await ({
+            const payload = ({
                 user: {
                     email: user.email,
                     id: user.id
@@ -53,9 +53,8 @@ router.post('/createuser',
             })
 
             const secret = UNIQUE_KEY + user.password;
-            const token = await jwt.sign(payload, secret, { expiresIn: '15m' });
+            const token = jwt.sign(payload, secret, { expiresIn: '15m' });
             const link = `http://${req.headers.host}${req.baseUrl}/verifyuser/${user.id}/${token}`
-            console.log(link)
 
             const mailOptions = {
               from: 'notesyardofficial@gmail.com',
@@ -114,7 +113,6 @@ router.post('/contactus', async (req, res) => {
             if (!user) {
                 return res.status(400).json({ error: "Invalid Email Id!" })
             };
-console.log("right here")
             const mailOptions = {
               from: 'notesyardofficial@gmail.com',
               to: 'darshankamble7371@gmail.com',
@@ -284,7 +282,6 @@ router.post('/resetpassword', async (req, res) => {
         const secret = UNIQUE_KEY + user.email + user.password;
         const token = await jwt.sign(payload, secret, { expiresIn: '10m' });
         const link = `http://localhost:5000/api/auth/resetpassword/${user.id}/${token}`
-        console.log(link)
         const mailOptions = {
             from: 'notesyardofficial@gmail.com',
             to: user.email,
@@ -359,7 +356,6 @@ router.post('/forgotpassword', async (req, res) => {
         const secret = UNIQUE_KEY + user.email;
         const token = await jwt.sign(payload, secret, { expiresIn: '5m' });
         const link = `http://localhost:5000/api/auth/forgotpassword/${user.id}/${token}`
-        console.log(link)
         // FUNC TO SEND EMAIL :
         const mailOptions = {
             from: 'NO REPLY📧 <notesyardofficial@gmail.com>',
@@ -379,10 +375,8 @@ router.post('/forgotpassword', async (req, res) => {
         };
         transporter.sendMail(mailOptions, function(error, info){
             if (error) {
-              console.log(error);
               res.send({ success: false, msg: 'Some Error Occured' })
             } else {
-              console.log('Email sent: ' + info.response);
               res.send({ success: true, msg: 'link has been send successfully!' })
             }
           });
@@ -392,6 +386,7 @@ router.post('/forgotpassword', async (req, res) => {
         res.status(500).send("Internal server error!")
     }
 })
+
 
 router.get('/forgotpassword/:id/:token', async (req, res) => {
     const { token } = req.params;
@@ -418,7 +413,7 @@ router.get('/forgotpassword/:id/:token', async (req, res) => {
 // ROUTE:03 user login using : POST ('/api/auth/getuser')
 router.post('/getuser', fetchuser, async (req, res) => {
     try {
-        userId = req.user.id;
+        const userId = req.user.id;
         const user = await User.findById(userId).select("-password")
         res.send(user)
     } catch (error) {
