@@ -15,6 +15,10 @@ const UserSchema = new Schema ({
         type:String,
         require:true
     },
+    notebookcoverurl:{
+        type:Array,
+        default:[]
+    },
     auth: {
         type:Boolean,
         require:true

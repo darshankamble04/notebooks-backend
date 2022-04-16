@@ -423,4 +423,40 @@ router.post('/getuser', fetchuser, async (req, res) => {
 })
 
 
+// ROUTE :05 TO UPDATE NOTEBOOK-COVER-URL ARRAY
+
+router.get('/getncu',fetchuser, async (req, res) => {
+
+    try {
+        // Cheack weather the user with this email exists
+        const userId = req.user.id;
+        let user = await User.findById(userId).select("notebookcoverurl")
+        res.send(user)
+    } catch (error) {
+        console.error(error)
+        res.status(500).send("Internal server error!")
+    }
+})
+
+// ROUTE :05 TO UPDATE NOTEBOOK-COVER-URL ARRAY
+
+router.put('/addncu',fetchuser, async (req, res) => {
+
+    try {
+        // Cheack weather the user with this email exists
+        const userId = req.user.id;
+        let user = await User.findById(userId).select("notebookcoverurl")
+        user.notebookcoverurl.unshift(req.body.notebookcoverurl)
+        user =await User.findByIdAndUpdate(userId,{$set:user},{new:true})
+        console.log(user)
+        // res.send({ success:true, notebookcoverurl:user.notebookcoverurl })
+        
+        res.send(user)
+    } catch (error) {
+        console.error(error)
+        res.status(500).send("Internal server error!")
+    }
+})
+
+
 module.exports = router;

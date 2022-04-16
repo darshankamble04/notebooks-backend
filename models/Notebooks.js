@@ -16,7 +16,7 @@ const notebookSchema = new Schema ({
     bookmark: {
         type:Boolean,
         default:false
-    },
+    }
 })
 
 const user = mongoose.model("notebook",notebookSchema)

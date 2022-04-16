@@ -1,4 +1,5 @@
 require("dotenv").config({ path: "./config.env" });
+const s3 = require("./s3")
 const express = require("express");
 const cors = require("cors")
 const connectToMongoDB = require('./db')
@@ -21,6 +22,10 @@ app.use("/api/auth", require("./routes/auth"))
 app.use("/api/notebooks", require("./routes/notebooks"))
 app.use("/api/notes", require("./routes/notes"))
 
+app.get('/s3Url', async (req, res) => {
+    const url = await s3.generateUploadURL()
+    res.send({url})
+  })
 app.listen(port, () => {
     console.log(`You are live on the port http://localhost:${port}`)
 });

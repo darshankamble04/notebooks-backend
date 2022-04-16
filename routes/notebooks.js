@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router();
 const Notebooks = require("../models/Notebooks");
 const Notes = require("../models/Notes");
+const User = require("../models/User")
 const isToken = require ("../middleware/fetchuser");
 
 // ROUTE :01 Get all the notebooks using : GET ("./api/notebooks/fetchallnotebooks") login required 
