@@ -6,14 +6,12 @@ const User = require("../models/User")
 const { body, validationResult } = require('express-validator');
 const fetchuser = require("../middleware/fetchuser");
 const { containeranalysis_v1alpha1 } = require("googleapis");
-const UNIQUE_KEY = 'Darshan9970';
-const PASSWORD = "Notes-Yard@$#9970?!&-";
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'notesyardofficial@gmail.com',
-      pass: PASSWORD
+      user: 'notebooks.darshankamble@gmail.com',
+      pass: process.env.PASSWORD
     }
   });
 
@@ -23,7 +21,7 @@ router.post('/createuser',
         body('email', 'Please Enter A Valid Email').isEmail()
     ],
     async (req, res) => {
-
+        console.log(process.env.PASSWORD)
         // Any errors return Bad request
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -52,23 +50,23 @@ router.post('/createuser',
                 }
             })
 
-            const secret = UNIQUE_KEY + user.password;
+            const secret = process.env.UNIQUE_KEY + user.password;
             const token = jwt.sign(payload, secret, { expiresIn: '15m' });
             const link = `http://${req.headers.host}${req.baseUrl}/verifyuser/${user.id}/${token}`
 
             const mailOptions = {
-              from: 'notesyardofficial@gmail.com',
+              from: 'notebooks.darshankamble@gmail.com',
               to: user.email,
               subject: 'Notes Yard : Account Activation',
               text: 'Veryfy your account :',
               html: `<p>Hii User!
-                    <br>
-                    <br>
-                    You registered an account on && notes yard &&, before being able to use your account you need to verify that this is your email address by  <a style="color:red;" href='${link}' >clicking here</a>
-                    <br>
-                    <br>
-                    Kind Regards,<br>
-                    Darshan Kamble
+                        <br>
+                        <br>
+                            You registered an account on <a style="color:blue;" href='https://notebooks-darshankamble.herokuapp.com/' >notebooks</a>, before being able to use your account you need to verify that this is your email address by  <a style="color:blue;" href='${link}' >clicking here</a>
+                        <br>
+                        <br>
+                        Kind Regards,<br>
+                        Darshan Kamble
                     </p>`,
             };
             
@@ -92,7 +90,7 @@ router.get('/verifyuser/:id/:token', async (req, res) => {
     const { id, token } = req.params
     try {
         let user = await User.findOne({ _id: req.params.id })
-        const secret = UNIQUE_KEY + user.password;
+        const secret = process.env.UNIQUE_KEY + user.password;
         const data = jwt.verify(token, secret);
         user.auth = true
         await User.findByIdAndUpdate(req.params.id, { $set: user }, { new: true })
@@ -114,7 +112,7 @@ router.post('/contactus', async (req, res) => {
                 return res.status(400).json({ error: "Invalid Email Id!" })
             };
             const mailOptions = {
-              from: 'notesyardofficial@gmail.com',
+              from: 'notebooks.darshankamble@gmail.com',
               to: 'darshankamble7371@gmail.com',
               subject: `${req.body.title}`,
               text: '',
@@ -170,14 +168,14 @@ router.post('/createuserbyemail', async (req, res) => {
                 id: user.id
             }
         })
-        const secret = UNIQUE_KEY
+        const secret = process.env.UNIQUE_KEY
         const token = await jwt.sign(payload, secret);
         res.send({ auth: true, token })
         // FUNC TO SEND EMAIL :
 
           
           const mailOptions = {
-              from: 'NO REPLY📧 <notesyardofficial@gmail.com>',
+              from: 'NO REPLY📧 <notebooks.darshankamble@gmail.com>',
             to: user.email,
             subject: 'Notes Yard : Account Created',
             text: '',
@@ -244,7 +242,7 @@ router.post('/login', [
         const payload = await ({
             id: user.id
         })
-        const token = await jwt.sign(payload, UNIQUE_KEY);
+        const token = await jwt.sign(payload, process.env.UNIQUE_KEY);
         console.log(token)
         res.send({ auth: true, token })
     } catch (error) {
@@ -259,6 +257,11 @@ router.post('/resetpassword', async (req, res) => {
 
     const { email, newpassword, password } = req.body
     try {
+        if(email==="test99@gmail.com"){
+            res.send({ success: false, msg: "You can't reset password of test user " })
+
+        }
+
         // Cheack weather the user with this email exists
         let user = await User.findOne({ email })
         if (!user) {
@@ -279,11 +282,11 @@ router.post('/resetpassword', async (req, res) => {
             id: user.id,
             newpassword: newpassword
         })
-        const secret = UNIQUE_KEY + user.email + user.password;
+        const secret = process.env.UNIQUE_KEY + user.email + user.password;
         const token = await jwt.sign(payload, secret, { expiresIn: '10m' });
         const link = `http://localhost:5000/api/auth/resetpassword/${user.id}/${token}`
         const mailOptions = {
-            from: 'notesyardofficial@gmail.com',
+            from: 'notebooks.darshankamble@gmail.com',
             to: user.email,
             subject: 'Notes Yard : Reset Password ',
             text: 'Reset Password :',
@@ -319,7 +322,7 @@ router.get('/resetpassword/:id/:token', async (req, res) => {
     const { token } = req.params;
     try {
         let user = await User.findOne({ _id: req.params.id })
-        const secret = UNIQUE_KEY + user.email + user.password;
+        const secret = process.env.UNIQUE_KEY + user.email + user.password;
         const data = jwt.verify(token, secret);
         if (!req.params.id === data.id) {
             res.status(400).send("This is not a valid link!")
@@ -341,6 +344,10 @@ router.post('/forgotpassword', async (req, res) => {
 
     const { email, newpassword } = req.body
     try {
+        if(email==="test99@gmail.com"){
+            res.send({ success: false, msg: "You can't change password of test user " })
+
+        }
         // Cheack weather the user with this email exists
         let user = await User.findOne({ email })
         if (!user) {
@@ -353,12 +360,12 @@ router.post('/forgotpassword', async (req, res) => {
             id: user.id,
             newpassword: newpassword
         })
-        const secret = UNIQUE_KEY + user.email;
+        const secret = process.env.UNIQUE_KEY + user.email;
         const token = await jwt.sign(payload, secret, { expiresIn: '5m' });
         const link = `http://localhost:5000/api/auth/forgotpassword/${user.id}/${token}`
         // FUNC TO SEND EMAIL :
         const mailOptions = {
-            from: 'NO REPLY📧 <notesyardofficial@gmail.com>',
+            from: 'NO REPLY📧 <notebooks.darshankamble@gmail.com>',
             to: user.email,
             subject: 'Notes Yard : Forgot Password Request',
             text: '',
@@ -392,7 +399,7 @@ router.get('/forgotpassword/:id/:token', async (req, res) => {
     const { token } = req.params;
     try {
         let user = await User.findOne({ _id: req.params.id })
-        const secret = UNIQUE_KEY + user.email;
+        const secret = process.env.UNIQUE_KEY + user.email;
         const data = jwt.verify(token, secret);
         if (!req.params.id === data.id) {
             res.status(400).send("This is not a valid link!")
