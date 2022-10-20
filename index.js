@@ -32,3 +32,5 @@ app.listen(port, () => {
 
 // bcrypt cors dotenv ejs express express-validator googleapis jsonwebtoken mongoose nodemailer
 // Notes-Yard@$#7371?!&-
+
+// first wheat wash resource wise demise venue glance slim rabbit coral universe
